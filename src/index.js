@@ -1,31 +1,37 @@
-import dude from 'debug-dude'
-const { /*debug,*/ log, info /*, warn, error*/ } = dude('bot')
-
-import { version } from '../package.json'
-info(`coffea-starter bot v${version} starting`)
-
-import config from '../config.json'
-
+import { setuser, getuser, nowplaying } from './commands'
 import { connect, message } from 'coffea'
-const networks = connect(config)
+import config from '../config.json'
+import dude from 'debug-dude'
+import low from 'lowdb'
 
-// --
+const { log, info } = dude('nowplaying')
+const db = low('../db.json')
+const networks = connect(config.networks)
 
-networks.on('message', (evt, reply) => {
-  log('Received message event: %o', evt)
-
-  // TODO: do something with messages here or remove the message event handler
-})
+info('Starting nowplaying bot...')
+db.read()
 
 networks.on('command', (evt, reply) => {
+  let p
   log('Received command event: %o', evt)
 
-  switch (evt.cmd) {
-    case 'say':
-      reply(message(evt.channel, evt.args.join(' ')))
+  switch (evt.cmd.toLowerCase()) {
+    case 'getuser':
+      p = getuser
       break
-    // TODO: add more commands here
+    case 'setuser':
+      p = setuser
+      break
+    case 'np':
+    case 'nowplaying':
+      p = nowplaying
+      break
   }
-})
 
-// TODO: write more code here or adjust code above
+  p(db, evt).then((msg) => {
+    reply(message(evt.channel, msg))
+    db.write()
+  }).catch((e) => {
+    reply(message(evt.channel, `Error: ${e}`))
+  })
+})

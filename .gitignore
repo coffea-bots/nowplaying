@@ -37,3 +37,4 @@ build
 
 # bot config
 config.json
+db.json
