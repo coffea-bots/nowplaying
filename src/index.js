@@ -28,9 +28,11 @@ networks.on('command', (evt, reply) => {
       break
   }
 
-  p(db, evt).then((msg) => {
+  p(db, evt).then((msg, flush) => {
     reply(message(evt.channel, msg))
-    db.write()
+    if (flush === true) {
+      db.write()
+    }
   }).catch((e) => {
     reply(message(evt.channel, `Error: ${e}`))
   })

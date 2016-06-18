@@ -20,7 +20,7 @@ export function setuser (db, evt) {
     // Persist!
     db.set(`s.${id}`, settings).value()
 
-    return resolve(`You've now associated your current identity to the username ${settings.un}`)
+    return resolve(`You've now associated your current identity to the username ${settings.un}`, true)
   })
 }
 
