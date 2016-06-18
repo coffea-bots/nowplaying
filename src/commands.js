@@ -1,10 +1,10 @@
 import { lastfm } from './services'
 
-function getIdentifier(evt) {
-  return evt['0'].from;
+function getIdentifier (evt) {
+  return evt['0'].from
 }
 
-export function setuser(db, evt) {
+export function setuser (db, evt) {
   return new Promise((resolve) => {
     if (evt.args.length === 0) {
       return resolve('Please provide a username to associate with your current identity.')
@@ -24,7 +24,7 @@ export function setuser(db, evt) {
   })
 }
 
-export function getuser(db, evt) {
+export function getuser (db, evt) {
   return new Promise((resolve) => {
     // Get the sender and get their settings.
     let id = getIdentifier(evt)
@@ -33,19 +33,19 @@ export function getuser(db, evt) {
     if (typeof settings.un !== 'undefined') {
       resolve(`You're currently associated with the username ${settings.un}`)
     } else {
-      resolve(`You're currently not associated with any username!`)
+      resolve('You\'re currently not associated with any username!')
     }
   })
 }
 
-export function nowplaying(db, evt) {
+export function nowplaying (db, evt) {
   return new Promise((resolve, reject) => {
     let p
     let id = getIdentifier(evt)
     let settings = db.get(`s.${id}`).value() || {}
 
     if (typeof settings.un === 'undefined') {
-      resolve(`You're currently not associated with any username!`)
+      resolve('You\'re currently not associated with any username!')
     }
 
     switch (settings.srv) {
@@ -55,15 +55,15 @@ export function nowplaying(db, evt) {
     }
 
     p(settings).then((data) => {
-      let is_doing
+      let string
 
       if (data.isNowListening) {
-        is_doing = 'is now listening to'
+        string = 'is now listening to'
       } else {
-        is_doing = 'is not listening to anything right now. The last track they listened to was'
+        string = 'is not listening to anything right now. The last track they listened to was'
       }
-      
-      resolve(`'${settings.un}' ${is_doing} ${data.title} by ${data.artist}`)
+
+      resolve(`'${settings.un}' ${string} ${data.title} by ${data.artist}`)
     }).catch(reject)
   })
 }
